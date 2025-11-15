@@ -40,12 +40,17 @@ if __name__ == "__main__":
     run_cmd(f'{py} particles_python.py 10000 500 0.01 particles_demo.csv',
             'Particles (10000 particles, 500 steps)')
     
+    # Convert PPM to PNG
+    print("\n[3/3] Converting PPM to PNG...")
+    run_cmd(f'{py} convert_ppm.py mandelbrot_demo.ppm mandelbrot_demo.png',
+            'Converting mandelbrot_demo.ppm to PNG')
+    
     # Check outputs
     print("\n" + "="*60)
     print("  Output Files")
     print("="*60)
     
-    for f in ['mandelbrot_demo.ppm', 'particles_demo.csv']:
+    for f in ['mandelbrot_demo.ppm', 'mandelbrot_demo.png', 'particles_demo.csv']:
         p = Path(f)
         if p.exists():
             size = p.stat().st_size / 1024

@@ -164,9 +164,14 @@ python visualize.py mandelbrot_demo.ppm
 # Visualizar partículas em 3D
 python visualize.py particles_demo.csv
 
-# Visualizar arquivo PPM manualmente
+# Abrir imagem PPM no visualizador padrão
 # Windows: clique 2x no arquivo .ppm
-# Linux/Mac: feh, eog, ou outro viewer de imagem
+
+# Converter PPM para PNG (mais comprimido, mais compatível)
+python convert_ppm.py mandelbrot_demo.ppm mandelbrot_demo.png
+
+# Depois abrir a imagem PNG
+explorer mandelbrot_demo.png
 ```
 
 ---
