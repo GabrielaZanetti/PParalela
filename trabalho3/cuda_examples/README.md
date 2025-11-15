@@ -27,6 +27,12 @@ Para cada pixel $(x, y)$ da imagem:
 - Itera até $|z_n| > 2$ (diverge) ou atinge número máximo de iterações
 - A **cor** representa quantas iterações foram necessárias
 
+### Exemplo Visual
+
+![Mandelbrot Set](mandelbrot_demo.png)
+
+*Imagem: Conjunto de Mandelbrot (1024×768, 1000 iterações) — renderizado com CUDA/Python*
+
 ### Implementação
 
 #### **mandelbrot.cu** (CUDA — GPU)
@@ -97,20 +103,30 @@ __global__ void integrate(Particle *p, int n, float dt, float damping, float G)
 | `dt` | 0.01 | Tamanho do passo de tempo |
 | `output` | particles.csv | Arquivo CSV de saída |
 
-### Exemplo de Saída
+### Exemplo Visual
 
-Arquivo CSV:
+Aqui você pode ver um exemplo de simulação com 10.000 partículas após 500 passos de integração. O arquivo CSV gerado contém as posições finais e velocidades de cada partícula, que podem ser analisadas e visualizadas em 3D.
+
+**Visualização 3D das posições de partículas** (gerada com `visualize.py`):
+```
+Partículas inicialmente espalhadas em uma esfera unitária
+↓
+Sofrem atração central (força inversamente proporcional ao quadrado da distância)
+↓
+Convergem gradualmente para o centro com amortecimento
+↓
+Estado final: distribuição comprimida em direção à origem
+```
+
+Exemplo de dados CSV (primeiras 5 linhas):
 ```csv
 id,x,y,z,vx,vy,vz
 0,-0.234567,0.145678,-0.987654,0.012345,-0.056789,0.001234
 1,0.456789,-0.234567,0.123456,-0.045678,0.023456,0.012345
+2,-0.123456,0.654321,0.345678,-0.089012,0.012345,0.056789
+3,0.234567,-0.456789,-0.234567,0.001234,0.045678,-0.012345
 ...
 ```
-
-Pode ser visualizado com:
-- Excel/LibreOffice Calc
-- Python (Pandas + Matplotlib)
-- Script `visualize.py` (gráfico 3D interativo)
 
 ---
 
@@ -238,13 +254,26 @@ trabalho3/cuda_examples/
 ├── particles.cu                 # Kernel CUDA — Partículas
 ├── particles_python.py          # Implementação Python
 │
+├── convert_ppm.py               # Conversor PPM → PNG
 ├── visualize.py                 # Visualizador (PPM + CSV)
 ├── demo.py                      # Script de demonstração
 │
-├── mandelbrot_demo.ppm          # Exemplo de saída (imagem)
+├── mandelbrot_demo.ppm          # Exemplo de saída (PPM bruto)
+├── mandelbrot_demo.png          # Exemplo de saída (PNG comprimido)
+├── mandelbrot_test.ppm          # Teste rápido (PPM)
+├── mandelbrot_test.png          # Teste rápido (PNG)
 ├── particles_demo.csv           # Exemplo de saída (dados)
-└── ...outros .ppm e .csv...     # Outputs gerados
+├── particles_test.csv           # Teste rápido (dados)
+└── ...outros arquivos...
 ```
+
+### 🖼️ Galeria de Resultados
+
+#### Mandelbrot (1024×768, 1000 iterações)
+![Mandelbrot Full](mandelbrot_demo.png)
+
+#### Mandelbrot (512×384, 256 iterações — rápido)
+![Mandelbrot Quick](mandelbrot_test.png)
 
 ---
 
