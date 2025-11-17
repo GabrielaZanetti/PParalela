@@ -18,6 +18,17 @@ def run_cmd(cmd, desc):
             print(f"✓ {desc} completed successfully")
             return True
         else:
+            #!/usr/bin/env python3
+            """
+            demo.py - SCRIPT DE DEMONSTRAÇÃO
+
+            Descrição:
+                Executa os exemplos (Mandelbrot e partículas), converte a imagem PPM para PNG
+                e (opcionalmente) abre visualizações se o matplotlib estiver disponível.
+
+            Uso:
+                python demo.py
+            """
             print(f"✗ {desc} failed")
             return False
     except Exception as e:
