@@ -1,8 +1,8 @@
-# CUDA & Simulação de Partículas — Exemplos Educacionais
+# CUDA & Simulação de Partículas
 
 ## 📋 Visão Geral do Projeto
 
-Este projeto implementa duas simulações computacionais intensivas — **conjunto de Mandelbrot** e **simulação de partículas** — em **CUDA** (GPU) e **Python** (CPU/NumPy).
+Este projeto implementa duas simulações computacionais intensivas **conjunto de Mandelbrot** e **simulação de partículas** em **CUDA** (GPU) e **Python** (CPU/NumPy).
 
 ### Objetivos Educacionais
 
