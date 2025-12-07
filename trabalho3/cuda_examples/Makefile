@@ -1,17 +1,14 @@
-# Makefile for cuda_examples
+# Makefile for CUDA Mandelbrot Example
 
 NVCC ?= nvcc
 CFLAGS ?= -O3
 
-all: mandelbrot particles
+all: mandelbrot
 
 mandelbrot: mandelbrot.cu
 	$(NVCC) $(CFLAGS) mandelbrot.cu -o mandelbrot
 
-particles: particles.cu
-	$(NVCC) $(CFLAGS) particles.cu -o particles
-
 clean:
-	rm -f mandelbrot particles *.ppm *.csv
+	rm -f mandelbrot *.ppm
 
 .PHONY: all clean

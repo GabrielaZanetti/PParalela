@@ -23,6 +23,7 @@
 #include <cmath>
 #include <cstring>
 #include <cuda_runtime.h>
+#include <chrono>
 
 // Verifica erros de CUDA e imprime mensagem de erro se houver
 static inline void checkCuda(cudaError_t err, const char* msg) {
@@ -74,6 +75,7 @@ __global__ void mandelbrot_kernel(unsigned char *img, int w, int h, int maxIter,
         img[idx+1] = (unsigned char) (v * 0.9); // Canal verde (médio)
         img[idx+2] = v;                         // Canal azul (completo)
     }
+}
 
 int main(int argc, char **argv) {
     // Parâmetros padrão
@@ -102,9 +104,19 @@ int main(int argc, char **argv) {
     dim3 block(16, 16);
     dim3 grid((w + block.x - 1) / block.x, (h + block.y - 1) / block.y);
 
+    // Inicia medição de tempo
+    auto start = std::chrono::high_resolution_clock::now();
+    
     // Lança kernel CUDA para computar Mandelbrot
     mandelbrot_kernel<<<grid, block>>>(d_img, w, h, maxIter, xmin, xmax, ymin, ymax);
     checkCuda(cudaGetLastError(), "Kernel launch failed");
+    
+    // Sincroniza GPU (espera kernel terminar)
+    cudaDeviceSynchronize();
+    
+    // Para medição de tempo
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     
     // Copia resultado do device de volta para o host
     checkCuda(cudaMemcpy(h_img, d_img, imgSize, cudaMemcpyDeviceToHost), "cudaMemcpy d->h");
@@ -116,7 +128,7 @@ int main(int argc, char **argv) {
     fwrite(h_img, 1, imgSize, f);           // Dados RGB binários
     fclose(f);
 
-    printf("Wrote %s (%dx%d)\n", out, w, h);
+    printf("%ld ms\n", duration.count());
 
     // Libera memória do device e host
     cudaFree(d_img);
