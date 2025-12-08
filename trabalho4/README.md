@@ -25,9 +25,19 @@ make
 
 Ajuste `NPROCS` e `OMP_NUM_THREADS` conforme sua máquina:
 
+compilar
+```bash
+mpicc -fopenmp montecarlo_mpi_openmp.c -o montecarlo_mpi_openmp -lm
+```
+
+Execute múltiplos testes para alimentar o CSV
 ```bash
 export OMP_NUM_THREADS=4
-mpirun -np 4 ./montecarlo_mpi_openmp --trials 10000000 --bet 1.0 --animal 5 --payout 20 --seed 42
+
+mpirun -np 1 ./montecarlo_mpi_openmp --trials 20000000
+mpirun -np 2 ./montecarlo_mpi_openmp --trials 20000000
+mpirun --oversubscribe -np 4 ./montecarlo_mpi_openmp --trials 20000000
+mpirun --oversubscribe -np 8 ./montecarlo_mpi_openmp --trials 20000000
 ```
 
 ### Interpretação dos resultados
