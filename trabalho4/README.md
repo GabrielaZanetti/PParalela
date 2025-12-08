@@ -21,7 +21,7 @@ No diretório que contém `montecarlo_mpi_openmp.c` e `Makefile`:
 make
 ````
 
-### Executar (exemplo)
+# Executar (exemplo)
 
 Ajuste `NPROCS` e `OMP_NUM_THREADS` conforme sua máquina:
 
@@ -38,6 +38,8 @@ mpirun -np 1 ./montecarlo_mpi_openmp --trials 20000000
 mpirun -np 2 ./montecarlo_mpi_openmp --trials 20000000
 mpirun --oversubscribe -np 4 ./montecarlo_mpi_openmp --trials 20000000
 mpirun --oversubscribe -np 8 ./montecarlo_mpi_openmp --trials 20000000
+
+python3 plot_graficos.py
 ```
 
 ### Interpretação dos resultados

@@ -1,4 +1,3 @@
-// montecarlo_mpi_openmp.c
 #include <mpi.h>
 #include <omp.h>
 #include <stdio.h>
@@ -22,7 +21,7 @@ int main(int argc, char *argv[]) {
     double bet = 1.0, payout = 20.0;
     unsigned int seed = 42;
 
-    // leitura de parâmetros
+    // leitura de parâmetros (mpirun --oversubscribe -np 4 ./montecarlo_mpi_openmp --trials 20000000)
     for(int i=1; i<argc; i++){
         if(strcmp(argv[i],"--trials")==0) trials = atoll(argv[++i]);
         else if(strcmp(argv[i],"--animal")==0) chosen_animal = atoi(argv[++i]);
@@ -30,13 +29,15 @@ int main(int argc, char *argv[]) {
         else if(strcmp(argv[i],"--payout")==0) payout = atof(argv[++i]);
         else if(strcmp(argv[i],"--seed")==0) seed = atoi(argv[++i]);
     }
-
+    
+    // Inicialização do MPI e identificação do processo
     MPI_Init(&argc,&argv);
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
 
+    // Divisão da simulação entre processos
     long long local_trials = trials / size;
     unsigned int local_seed = seed + rank;
 
@@ -46,16 +47,28 @@ int main(int argc, char *argv[]) {
     double local_sum = 0.0;
 
     double t0 = MPI_Wtime();
+    // Contagem paralela com OpenMP
+    /*
+    #pragma omp parallel: cria threads.
+    reduction(+: ...): garante soma concorrente correta.
+    rand_r() evita condições de corrida na geração aleatória.
+    */
     #pragma omp parallel reduction(+:local_wins, local_sum)
     {
         unsigned int s = local_seed + omp_get_thread_num();
         #pragma omp for schedule(static)
         for(long long i=0;i<local_trials;i++){
             int result = rand_r(&s)%25 + 1;
+            // Cada thread simula lançamentos independentemente.
             if(result == chosen_animal){
                 local_wins++;
                 local_sum += (payout*bet - bet);
             } else local_sum -= bet;
+            /*
+            Se o número sorteado for o do jogador → vitória.
+            Caso contrário → perde o valor apostado.
+            O retorno acumulado é armazenado.
+            */
         }
     }
     double t1 = MPI_Wtime();
@@ -63,10 +76,12 @@ int main(int argc, char *argv[]) {
     long long wins_total;
     double sum_total;
 
+    // reducao global MPI
     MPI_Reduce(&local_wins,&wins_total,1,MPI_LONG_LONG_INT,MPI_SUM,0,MPI_COMM_WORLD);
     MPI_Reduce(&local_sum,&sum_total,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
 
     double time_end = MPI_Wtime();
+    // medicao do tempo
     double total_time = time_end - time_start;
 
     // CSV individual por processo
@@ -78,7 +93,7 @@ int main(int argc, char *argv[]) {
         rank,size,omp_get_max_threads(),local_trials,(t1-t0),total_time,local_seed,local_wins,local_sum/local_trials);
     fclose(f);
 
-    // ================= NOVA PARTE: REGISTRO GLOBAL PARA GRÁFICO =================
+    // REGISTRO GLOBAL PARA GRÁFICO
     if(rank == 0){
         FILE *fr = fopen("resultados_execucao.csv","a"); // acumula runs
         fprintf(fr,"%d,%d,%lld,%.6f\n",size,omp_get_max_threads(),trials,total_time);

@@ -1,2 +1,2 @@
 rank,np,threads,trials_local,time_local,time_total,seed,wins_local,avg_return_local
-6,8,4,2500000,0.047272,0.047297,48,100701,-0.194392
+6,8,4,2500000,0.049103,0.049156,48,100701,-0.194392
